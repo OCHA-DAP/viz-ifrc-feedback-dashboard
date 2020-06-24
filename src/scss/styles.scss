@@ -1,5 +1,6 @@
 @import '_grid';
 @import '_forms';
+@import '_loader';
 
 * {
 	box-sizing: border-box;
@@ -75,19 +76,7 @@ h4 {
 	padding-right: 10px;
 }
 
-ul {
-	align-items: center;
-	display: flex;
-	margin: 0;
-	padding: 0;
-	&.align-right {
-		margin-left: auto;
-	}
-	li {
-		list-style-type: none;
-		padding: 0 0 0 10px;
-	}
-}
+
 
 .btn {
 	background-color: #0073b7;
@@ -169,8 +158,23 @@ select {
 	width: 100%;
 }
 
+.ms-parent {
+  margin-top: 7px; }
+
+.ms-choice {
+  height: 34px !important;
+  line-height: 34px !important; }
+  
+
 .presentation-dropdown {
 	margin-bottom: 15px;
+}
+
+
+main,
+footer {
+  opacity: 0;
+  transition: 0.5s all ease;
 }
 
 @media only screen and (max-width: 767px) {
