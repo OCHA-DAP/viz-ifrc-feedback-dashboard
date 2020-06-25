@@ -10,12 +10,15 @@
 
     <link href='css/styles.css' rel='stylesheet' />
     <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
 
     <script src="https://kit.fontawesome.com/39e5643f1a.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://d3js.org/d3.v5.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/c3/0.7.11/c3.min.js"></script>
     <script src="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.js"></script>
+    <script src="https://momentjs.com/downloads/moment.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
   </head>
 
   <body>
@@ -88,13 +91,22 @@
 
           <div  class="dateLang">
             Date range
+            <div class="date-range-container">
+              <input type="text" id="from" name="from">
+              <label for="to"> – </label>
+              <input type="text" id="to" name="to">
+            </div>
           </div>
 
           <div class="healthLang">
             Health zone
-            <select class='health-zone-dropdown'>
+            <select id='health-zone-dropdown'>
               <option value=''>Beni</option>
             </select>
+          </div>
+
+          <div class="update">
+            <button type="button" class="btn btn-outline-primary" id="update">Mettre à jour</button>
           </div>
 
           <div class="downloadLang">
@@ -132,9 +144,9 @@
 
           <div class='grid-container'>
             <div class='container chart col-8'>
-              <div class='inner'>
-                <h3>Top 5 categories at Beni</h3>
+              <div class='inner' id="mainAreaTitle">
               </div>
+              <div class="main-content"></div>
               <div class='container-footer'>
                 <a href='#'><i class='fas fa-question-circle'></i></a>
               </div>

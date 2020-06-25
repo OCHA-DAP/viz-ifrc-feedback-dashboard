@@ -1,13 +1,27 @@
-var multipleSelectOptions =  {
-		multiple: true,
-		multipleWidth: 1,
+// for filters
+let filtersPivotData;
+let diseases_data = [];
+let type_data = [];
+let category_data = [];
+let keyword_data = [];
+let healthzones_data = [];
+
+let diseases_filter;
+let type_filter;
+let category_filter;
+let keyword_filter;
+let healthzones_filter;
+
+let multipleSelectOptions =  {
 		minimumCountSelected: 3,
-      	// displayValues: true,
+      	displayValues: true,
       	selectAll: true
 	};
 
-var defaultTypeSelected,
-	defaultCategorySelected;
+
+// date picker
+let datePickerFrom,
+	datePickerTo;
 
 function setFilters(disease) {
 	
@@ -44,8 +58,8 @@ function setFilters(disease) {
 
 	// category filter
 	// test and create or update selects 
+	d3.select('#category-dropdown').attr("multiple", "multiple");
 	if (category_filter == undefined) {
-		d3.select('#category-dropdown').attr("multiple", "multiple");
 		$('#category-dropdown').empty();
 	    category_filter = d3.select('#category-dropdown')
 	        .selectAll("option")
@@ -54,11 +68,7 @@ function setFilters(disease) {
 	          .text(function(d){ return d; })
 	          .attr("value", function(d) { return d; });
 	    
-	    $('#category-dropdown').multipleSelect({
-			minimumCountSelected: 3,
-	      	displayValues: true,
-	      	selectAll: true
-	    });
+	    $('#category-dropdown').multipleSelect({multipleSelectOptions});
 	    $('#category-dropdown').val(category_data[0]);
 	    $('#category-dropdown').multipleSelect('refresh');
 	} else {
@@ -78,8 +88,8 @@ function setFilters(disease) {
 
 	// keyword filter
 	// test and create or update selects
+	d3.select('#keyword-dropdown').attr("multiple", "multiple");
 	if (keyword_filter == undefined) {
-		d3.select('#keyword-dropdown').attr("multiple", "multiple");
 		$('#keyword-dropdown').empty();
 	    keyword_filter = d3.select('#keyword-dropdown')
 	        .selectAll("option")
@@ -88,11 +98,7 @@ function setFilters(disease) {
 	          .text(function(d){ return d; })
 	          .attr("value", function(d) { return d; });
 	    
-	    $('#keyword-dropdown').multipleSelect({
-			minimumCountSelected: 3,
-	      	displayValues: true,
-	      	selectAll: true
-	    });
+	    $('#keyword-dropdown').multipleSelect({multipleSelectOptions});
 	    $('#keyword-dropdown').val(keyword_data[0]);
 	    $('#keyword-dropdown').multipleSelect('refresh');
 	 } else {
@@ -205,6 +211,30 @@ function updateMultipleSelect(filterName, id, data) {
           .attr("value", function(d) { return d; });
 		
 		$('#' +id).multipleSelect('refresh'); 
-} 
+} //updateMultipleSelect
+
+
+function createDatePicker(argument) { 
+	if (datePickerFrom==undefined) {
+		datePickerFrom = $('#from')
+			.datepicker({
+				minDate: miniDate,
+				maxDate: maxiDate
+			});
+		datePickerTo = $('#to')
+			.datepicker({
+				minDate: miniDate,
+				maxDate: maxiDate
+			});
+	}
+	$("#from").datepicker( "setDate" , miniDate );
+    $("#to").datepicker( "setDate" , maxiDate );
+} //createDatePicker
+
+
+
+
+
+
 
 

@@ -106,6 +106,9 @@ h4 {
 .inner {
   padding: 10px;
 }
+.main-content {
+  padding: 10px;
+}
 
 .content {
 	margin-right: 30px;
@@ -170,6 +173,24 @@ select {
 	margin-bottom: 15px;
 }
 
+.date-range-container {
+    align-items: center;
+	display: flex;
+   	margin-top: 5px;
+    label {
+    	padding: 0 5px;
+    }
+    input {
+    	border: 0;
+    	border-radius: 4px;
+		padding: 0 10px;
+    }
+}
+
+.hasDatepicker {
+	height: 34px;
+	width: 50%;
+}
 
 main,
 footer {

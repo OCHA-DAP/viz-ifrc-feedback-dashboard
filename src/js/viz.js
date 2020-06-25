@@ -1,5 +1,7 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWzNKbxmKZ2430Mbri8mNaFP29dFTqgmfgeUxz_Tf-M_75v2_gNi1ZUbIN524_LgfXt4C0P2HlLGZ3/pub?gid=864201017&single=true&output=csv';
+// const dataURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWzNKbxmKZ2430Mbri8mNaFP29dFTqgmfgeUxz_Tf-M_75v2_gNi1ZUbIN524_LgfXt4C0P2HlLGZ3/pub?gid=864201017&single=true&output=csv';
+const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
+
 //const figuresURL = '';
 const langFileURL = 'data/lang.json';
 
@@ -8,22 +10,11 @@ let lang = 'fr';
 
 let feedbackData;
 
-// for filters
-let filtersPivotData;
-let diseases_data = [];
-let type_data = [];
-let category_data = [];
-let keyword_data = [];
-
-let diseases_filter;
-let type_filter;
-let category_filter;
-let keyword_filter;
-
+let maxiDate,
+    miniDate;
 
 
 $( document ).ready(function() {
-
 
   function getData() {
   	Promise.all([
@@ -31,10 +22,19 @@ $( document ).ready(function() {
   		d3.json(langFileURL),
   		d3.csv(dataURL)
   	]).then(function(data){
-
   		langDict = data[0];
-      feedbackData = data[1];
+      data[1].forEach( function(element, index) {
+        var d = moment(element["Date AAAA-MM-JJ"],['DD/MM/YYYY']);
+        var date = new Date(d.year(), d.month(), d.date())
+        element["Date AAAA-MM-JJ"] = date;
 
+        healthzones_data.includes(element["Zone de Santé"]) ? '' : healthzones_data.push(element["Zone de Santé"]);
+      });
+      feedbackData = data[1];
+      
+      //get date ranges
+      miniDate = new Date(d3.min(feedbackData,function(d){return d["Date AAAA-MM-JJ"];}));
+      maxiDate = new Date(d3.max(feedbackData,function(d){return d["Date AAAA-MM-JJ"];}));
 
   		initialize();
       $('.loader').hide();
@@ -44,12 +44,9 @@ $( document ).ready(function() {
   }
 
   async function initialize() {
-    var diseasePrepend = '<option value="">';
-    lang=='fr' ? diseasePrepend += 'Séléctionner maladie</option>' : diseasePrepend += 'Select disease</option>';
-    
-
+    var diseasePrepend = '<option value="">Séléctionner maladie</option>';
+    lang=='en' ? diseasePrepend = '<option value="">Select disease</option></option>': null;
     diseases_data = await getFiltersPivotData();  
-
     if (diseases_filter == undefined) {
       diseases_filter = d3.select('#disease-dropdown')
           .selectAll("option")
@@ -59,7 +56,6 @@ $( document ).ready(function() {
             .attr("value", function(d) { return d; });
       $('#disease-dropdown').prepend(diseasePrepend);
       $('#disease-dropdown').val($('.disease-dropdown option:first').val());
-
       $('#disease-dropdown').multipleSelect();
     } else {
       $('#disease-dropdown').empty();
@@ -78,6 +74,7 @@ $( document ).ready(function() {
       resetFilters();
     }
 
+    globalCharts();
 
     $('#disease-dropdown').on('change', function(e){
       var selected = $('#disease-dropdown').val();
@@ -85,7 +82,49 @@ $( document ).ready(function() {
         setFilters(selected);
       }
     });
+
+    //date picker
+    createDatePicker();
+
+    // healtthzone filter
+    // test and create or update selects
+    var healthzonePrepend = '<option value="">Séléctionner une zone de santé</option>';
+      lang=='en' ? healthzonePrepend = '<option value="">Select health zone</option></option>': null;
+    if (healthzones_filter == undefined) {
+      $('#health-zone-dropdown').empty();
+        healthzones_filter = d3.select('#health-zone-dropdown')
+            .selectAll("option")
+            .data(healthzones_data)
+            .enter().append("option")
+              .text(function(d){ return d; })
+              .attr("value", function(d) { return d; });
+        
+        $('#health-zone-dropdown').prepend(healthzonePrepend);
+          $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
+        $('#health-zone-dropdown').multipleSelect();
+     } else {
+      $('#health-zone-dropdown').empty();
+
+        healthzones_filter = d3.select('#health-zone-dropdown')
+          .selectAll("option")
+          .data(healthzones_data)
+          .enter().append("option")
+            .text(function(d){ return d; })
+            .attr("value", function(d) { return d; });
+      
+      $('#health-zone-dropdown').prepend(healthzonePrepend);
+          $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
+      $('#health-zone-dropdown').multipleSelect('refresh');
+     }
+
   } //initialize
+
+  function globalCharts() {
+    var areaTitle = '<h3>Aperçu global toutes maladies confondues</h3>';
+    lang=='en'? areaTitle = '<h3>All diseases overall overview</h3>' : null;
+    $('#mainAreaTitle').html(areaTitle);
+    $('.main-content').html("Global Figures") 
+  }//globalCharts
 
 
   getData();
