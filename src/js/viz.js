@@ -1,8 +1,6 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-// const dataURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQWzNKbxmKZ2430Mbri8mNaFP29dFTqgmfgeUxz_Tf-M_75v2_gNi1ZUbIN524_LgfXt4C0P2HlLGZ3/pub?gid=864201017&single=true&output=csv';
-const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
-
-//const figuresURL = '';
+const dataURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn/pub?gid=864201017&single=true&output=csv';
+// const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 
 let langDict;
@@ -13,6 +11,11 @@ let feedbackData;
 let maxiDate,
     miniDate;
 
+let diseaseSelected;
+let typeSelected;
+let categorySelection;
+let keywordsSelection;
+let healthzoneSelection;
 
 $( document ).ready(function() {
 
@@ -111,36 +114,58 @@ $( document ).ready(function() {
      }
 
     
-    globalCharts();
+    globalChartsManager();
+    detailedChart = undefined;
+    $('#global-chart').show();
+    $('#chart').html('');
 
   } //initialize
 
-  function globalCharts() {
-    var areaTitle = '<h3>Aperçu global toutes maladies confondues</h3>';
+  function globalChartsManager() {
+    var areaTitle = 'Aperçu global toutes maladies confondues';
     if(lang=='en'){
-      areaTitle = '<h3>All diseases overall overview</h3>';
+      areaTitle = 'All diseases overall overview';
     }
     $('#mainAreaTitle').html(areaTitle);
     // $('.global-chart').html("Global c3 chart") 
 
     var data = getGlobalData(); 
     var column = formatGlobalData_pct(data);
-
     drawGlobalChart(column);
   }//globalCharts
+
+  function detailedChartManager() {
+    var areaTitle = '<h3>'+diseaseSelected+'</h3>Top 5 mots clés à -selection par defaut->';
+    if(lang=='en'){
+      areaTitle = '<h3>'+diseaseSelected+'</h3>Top 5 key words in -default selection->';
+    }
+    var data = getDetailedData();
+    var cols = formatDetailedData_pct(data);
+    if (detailedChart == undefined) {
+      $('#mainAreaTitle').html(areaTitle);
+      drawDetailedChart(cols);
+    } else {
+      console.log("update detailed chart");
+
+    } 
+  }//detailedChart
 
 
   getData();
 
 
   $('#update').on('click', function(d){
-    var diseaseSelected = $('#disease-dropdown').val();
+    diseaseSelected = $('#disease-dropdown').val();
+    typeSelected = $('#type-dropdown').val();
+    categorySelection = $('#category-dropdown').val();
+    keywordsSelection = $('#keyword-dropdown').val();
+    healthzoneSelection = $('#health-zone-dropdown').val();
     
     if (diseaseSelected=='') {
       console.log("should updated global chart");
       updateGlobalChart();
     } else {
-      console.log("should updated detail chart");
+      detailedChartManager();
     }
 
   });
