@@ -95,4 +95,3 @@ function waitForElement(varName){
 
 
 
-

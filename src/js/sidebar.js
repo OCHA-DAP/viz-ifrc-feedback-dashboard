@@ -26,6 +26,18 @@ let datePickerFrom,
 function setFilters(disease) {
 	
 	updateFiltersData();
+	$('#health-zone-dropdown').multipleSelect('destroy');
+    d3.select('#health-zone-dropdown').attr("multiple", "multiple");
+  	$('#health-zone-dropdown').empty();
+  	healthzones_filter = d3.select('#health-zone-dropdown')
+    	.selectAll("option")
+    	.data(healthzones_data)
+    	.enter().append("option")
+      	.text(function(d){ return d; })
+      	.attr("value", function(d) { return d; });
+  	$('#health-zone-dropdown').val(healthzones_data[0]);
+  	$('#health-zone-dropdown').multipleSelect({multipleSelectOptions});
+  	// $('#health-zone-dropdown').multipleSelect('refresh');
 
 	// type filter
 	// test and create or update selects 

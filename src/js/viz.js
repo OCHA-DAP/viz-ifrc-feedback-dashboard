@@ -74,65 +74,87 @@ $( document ).ready(function() {
       resetFilters();
     }
 
-    globalCharts();
-
-    $('#disease-dropdown').on('change', function(e){
-      var selected = $('#disease-dropdown').val();
-      if(selected !=" "){
-        setFilters(selected);
-      }
-    });
-
     //date picker
     createDatePicker();
 
     // healtthzone filter
     // test and create or update selects
     var healthzonePrepend = '<option value="">Séléctionner une zone de santé</option>';
-      lang=='en' ? healthzonePrepend = '<option value="">Select health zone</option></option>': null;
-    if (healthzones_filter == undefined) {
-      $('#health-zone-dropdown').empty();
-        healthzones_filter = d3.select('#health-zone-dropdown')
+    lang=='en' ? healthzonePrepend = '<option value="">Select health zone</option></option>': null;
+    
+    if (healthzones_filter == undefined) {      
+      // $('#health-zone-dropdown').empty();
+      healthzones_filter = d3.select('#health-zone-dropdown')
             .selectAll("option")
             .data(healthzones_data)
             .enter().append("option")
               .text(function(d){ return d; })
               .attr("value", function(d) { return d; });
         
-        $('#health-zone-dropdown').prepend(healthzonePrepend);
-          $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
-        $('#health-zone-dropdown').multipleSelect();
-     } else {
-      $('#health-zone-dropdown').empty();
-
-        healthzones_filter = d3.select('#health-zone-dropdown')
-          .selectAll("option")
-          .data(healthzones_data)
-          .enter().append("option")
-            .text(function(d){ return d; })
-            .attr("value", function(d) { return d; });
-      
       $('#health-zone-dropdown').prepend(healthzonePrepend);
-          $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
+      $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
+      $('#health-zone-dropdown').multipleSelect();
+     } else {
+      $('#health-zone-dropdown').multipleSelect('destroy');
+      $('#health-zone-dropdown').removeAttr("multiple");
+      $('#health-zone-dropdown').empty();
+      healthzones_filter = d3.select('#health-zone-dropdown')
+        .selectAll("option")
+        .data(healthzones_data)
+        .enter().append("option")
+          .text(function(d){ return d; })
+          .attr("value", function(d) { return d; });
+      $('#health-zone-dropdown').prepend(healthzonePrepend);
+      $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
+      $('#health-zone-dropdown').multipleSelect();
       $('#health-zone-dropdown').multipleSelect('refresh');
      }
+
+    
+    globalCharts();
 
   } //initialize
 
   function globalCharts() {
     var areaTitle = '<h3>Aperçu global toutes maladies confondues</h3>';
-    lang=='en'? areaTitle = '<h3>All diseases overall overview</h3>' : null;
+    if(lang=='en'){
+      areaTitle = '<h3>All diseases overall overview</h3>';
+    }
     $('#mainAreaTitle').html(areaTitle);
-    $('.main-content').html("Global Figures") 
+    // $('.global-chart').html("Global c3 chart") 
+
+    var data = getGlobalData(); 
+    var column = formatGlobalData_pct(data);
+
+    drawGlobalChart(column);
   }//globalCharts
 
 
   getData();
 
+
+  $('#update').on('click', function(d){
+    var diseaseSelected = $('#disease-dropdown').val();
+    
+    if (diseaseSelected=='') {
+      console.log("should updated global chart");
+      updateGlobalChart();
+    } else {
+      console.log("should updated detail chart");
+    }
+
+  });
+  
+  $('#disease-dropdown').on('change', function(e){
+    var selected = $('#disease-dropdown').val();
+    if(selected !=" "){
+      setFilters(selected);
+    }
+  });
+
   $("input[name='langRadio']").change(function(d){
     var en = $("#english").is(':checked') ;
     en ? lang='en' : lang='fr';
-
 
     //translate interface
     initialize();
