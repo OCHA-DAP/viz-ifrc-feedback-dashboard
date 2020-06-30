@@ -1,5 +1,5 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn/pub?gid=864201017&single=true&output=csv';
+const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
 // const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 
@@ -27,7 +27,8 @@ $( document ).ready(function() {
   	]).then(function(data){
   		langDict = data[0];
       data[1].forEach( function(element, index) {
-        var d = moment(element["Date AAAA-MM-JJ"],['DD/MM/YYYY']);
+        var d = moment(element["Date AAAA-MM-JJ"],['DD-MM-YYYY']);
+
         var date = new Date(d.year(), d.month(), d.date())
         element["Date AAAA-MM-JJ"] = date;
 
