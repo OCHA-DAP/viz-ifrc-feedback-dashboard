@@ -107,7 +107,7 @@ let keyWordKey = "Mot Clé";
  
 function getGlobalData(heathzone) {
 	// translate 
-	lang=='en' ? diseaseKey = "Disease" : '';
+	lang=='en' ? diseaseKey = "Disease" : diseaseKey = "Maladie";
 
 	var fromDate = $("#from").datepicker('getDate');
 	var toDate = $("#to").datepicker('getDate'); 
@@ -187,7 +187,13 @@ function getDetailedData(argument) {
 		typeKey = "Type_english";
 		categoryKey = "Category_english";
 		keyWordKey = "Key_word_english";
+	} else {
+		diseaseKey = "Maladie";
+		typeKey = "Type";
+		categoryKey = "Catégorie";
+		keyWordKey = "Mot Clé";		
 	}
+
 	data = feedbackData.filter(function(d){
 		return d[diseaseKey] == diseaseSelected;
 	});
@@ -204,7 +210,7 @@ function getDetailedData(argument) {
 	});
 	data = data.filter(filterByHealthZone) ;
 	data = data.filter(filterByCategory) ;
-	// data = data.filter(filterByKeyword) ;
+	data = data.filter(filterByKeyword) ;
 
 	var dataArr = d3.nest()
 		.key(function(d){ return d["Zone de Santé"]; })
@@ -212,7 +218,6 @@ function getDetailedData(argument) {
 		.rollup(function(v){ return d3.sum(v, function(d){ return d['Nbre']; }); })
 		.entries(data)
 
-	console.log(dataArr)
 	return dataArr;
 	 
 } //getDetailedData
@@ -223,31 +228,38 @@ var sort_value = function (d1, d2) {
 	return 0;
 }
 
+var sort_key = function (d1, d2) {
+	if (d1.key > d2.key) return -1;
+	if (d1.key < d2.key) return 1;
+	return 0;
+}
 function formatDetailedData_pct(data) {
 	var x = ['x'],
-		y = [];
+		columns = [];
 	var dataNames = [];
 
-	if (healthzoneSelection.length==1) {
-		var total = d3.sum(data[0].values, function(d){ return d['value'];});
-		data[0].values.forEach( function(element, index) {
-			var pct = Number(((element['value'] / total)*100).toFixed(2));
-			element['value'] = pct;
+	data.forEach( function(element, index) {
+		dataNames.push(element.key);
+		var arr = element.values;
+		arr.forEach( function(item) {
+			x.includes(item.key) ? '' : x.push(item.key);
 		});
-		console.log(data)
-		data[0].values.sort(sort_value);
-		console.log("after sort")
-		console.log(data)
-		data[0].values.forEach( function(element, index) {
-			x.push(element.key);
-			y.push(element.value);
-		});
-	}
-	// } else {
+	});
+	columns.push(x);
+	data.forEach( function(element, index) {
+		var col = [];
+		col.push(element.key)
+		for (var i = 1; i < x.length; i++) {
+			var val = 0;
+			element.values.forEach( function(item) {
+				item.key==x[i] ? val = item.value : '';
+			});
+			col.push(val);
+		}
+		columns.push(col);
+	});
 
-	// }
-
-	return [x, y];
+	return columns;
 
 }//formatDetailedData
 

@@ -1,6 +1,6 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
-// const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
+// const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
+const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 
 let langDict;
@@ -48,35 +48,26 @@ $( document ).ready(function() {
   }
 
   async function initialize() {
+    
+    diseases_data = await getFiltersPivotData();  
+    
     var diseasePrepend = '<option value="">Séléctionner maladie</option>';
     lang=='en' ? diseasePrepend = '<option value="">Select disease</option></option>': null;
-    diseases_data = await getFiltersPivotData();  
-    if (diseases_filter == undefined) {
-      diseases_filter = d3.select('#disease-dropdown')
+    
+    $('#disease-dropdown').multipleSelect('destroy');
+    $('#disease-dropdown').empty();
+    diseases_filter = d3.select('#disease-dropdown')
           .selectAll("option")
           .data(diseases_data)
           .enter().append("option")
             .text(function(d){ return d; })
             .attr("value", function(d) { return d; });
-      $('#disease-dropdown').prepend(diseasePrepend);
-      $('#disease-dropdown').val($('.disease-dropdown option:first').val());
-      $('#disease-dropdown').multipleSelect();
-    } else {
-      $('#disease-dropdown').empty();
-      diseases_filter = d3.select('#disease-dropdown')
-        .selectAll("option")
-        .data(diseases_data)
-        .enter().append("option")
-          .text(function(d){ return d; })
-          .attr("value", function(d) { return d; });
-      
-      $('#disease-dropdown').prepend(diseasePrepend);
-      $('#disease-dropdown').val($('.disease-dropdown option:first').val());
-      $('#disease-dropdown').multipleSelect('refresh');
+    
+    $('#disease-dropdown').multipleSelect();
+    $('#disease-dropdown').prepend(diseasePrepend);
+    $('#disease-dropdown').val($('#disease-dropdown option:first').val());
+    $('#disease-dropdown').multipleSelect('refresh');
 
-      // reset others filters
-      resetFilters();
-    }
 
     //date picker
     createDatePicker();
@@ -86,37 +77,24 @@ $( document ).ready(function() {
     var healthzonePrepend = '<option value="">Séléctionner une zone de santé</option>';
     lang=='en' ? healthzonePrepend = '<option value="">Select health zone</option></option>': null;
     
-    if (healthzones_filter == undefined) {      
-      // $('#health-zone-dropdown').empty();
-      healthzones_filter = d3.select('#health-zone-dropdown')
+    $('#health-zone-dropdown').empty();
+    $('#health-zone-dropdown').multipleSelect('destroy');
+    $('#health-zone-dropdown').removeAttr("multiple");
+    healthzones_filter = d3.select('#health-zone-dropdown')
             .selectAll("option")
             .data(healthzones_data)
             .enter().append("option")
               .text(function(d){ return d; })
               .attr("value", function(d) { return d; });
-        
-      $('#health-zone-dropdown').prepend(healthzonePrepend);
-      $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
-      $('#health-zone-dropdown').multipleSelect();
-     } else {
-      $('#health-zone-dropdown').multipleSelect('destroy');
-      $('#health-zone-dropdown').removeAttr("multiple");
-      $('#health-zone-dropdown').empty();
-      healthzones_filter = d3.select('#health-zone-dropdown')
-        .selectAll("option")
-        .data(healthzones_data)
-        .enter().append("option")
-          .text(function(d){ return d; })
-          .attr("value", function(d) { return d; });
-      $('#health-zone-dropdown').prepend(healthzonePrepend);
-      $('#health-zone-dropdown').val($('.health-zone-dropdown option:first').val());
-      $('#health-zone-dropdown').multipleSelect();
-      $('#health-zone-dropdown').multipleSelect('refresh');
-     }
-
     
+    $('#health-zone-dropdown').prepend(healthzonePrepend);
+    $('#health-zone-dropdown').val($('#health-zone-dropdown option:first').val());
+    $('#health-zone-dropdown').multipleSelect();
+
+    setFilters();
+
     globalChartsManager();
-    detailedChart = undefined;
+    
     $('#global-chart').show();
     $('#chart').html('');
 
@@ -136,17 +114,17 @@ $( document ).ready(function() {
   }//globalCharts
 
   function detailedChartManager() {
-    var areaTitle = '<h3>'+diseaseSelected+'</h3>Top 5 mots clés à -selection par defaut->';
+    var areaTitle = '<h3>'+diseaseSelected+'</h3>Mot clé pour les categories suivantes :'+categorySelection;
     if(lang=='en'){
-      areaTitle = '<h3>'+diseaseSelected+'</h3>Top 5 key words in -default selection->';
+      areaTitle = '<h3>'+diseaseSelected+'</h3>Key words for following categories: '+categorySelection;
     }
+    $('#mainAreaTitle').html(areaTitle);
     var data = getDetailedData();
     var cols = formatDetailedData_pct(data);
     if (detailedChart == undefined) {
-      $('#mainAreaTitle').html(areaTitle);
       drawDetailedChart(cols);
     } else {
-      console.log("update detailed chart");
+      updateDetailedChart();
 
     } 
   }//detailedChart
@@ -163,7 +141,6 @@ $( document ).ready(function() {
     healthzoneSelection = $('#health-zone-dropdown').val();
     
     if (diseaseSelected=='') {
-      console.log("should updated global chart");
       updateGlobalChart();
     } else {
       detailedChartManager();
@@ -174,15 +151,36 @@ $( document ).ready(function() {
   $('#disease-dropdown').on('change', function(e){
     var selected = $('#disease-dropdown').val();
     if(selected !=" "){
-      setFilters(selected);
+      // setFilters(selected);
+      var options = getFilterTypeList(selected);
+      updateMultipleSelect(type_filter, "type-dropdown", options);
+      var prepend = '<option value="">Séléctionner un type</option>';
+      lang=='en' ? prepend = '<option value="">Select type</option></option>': null;
+      $('#type-dropdown').prepend(prepend);
+      $('#type-dropdown').val($('#type-dropdown option:first').val());
+      $('#type-dropdown').multipleSelect('refresh');
     }
   });
+
+  $('#type-dropdown').on('change', function(e){
+    var selected = $('#type-dropdown').val();
+    if(selected !=" "){
+      var options = getFilterCategoryList(selected);
+      updateMultipleSelect(category_filter, "category-dropdown", options);
+    }
+  });
+
 
   $("input[name='langRadio']").change(function(d){
     var en = $("#english").is(':checked') ;
     en ? lang='en' : lang='fr';
 
     //translate interface
+
+    globalDiseaseChart = globalDiseaseChart.destroy();
+    detailedChart = undefined;
+    resetFilters(); 
+
     initialize();
 
   })

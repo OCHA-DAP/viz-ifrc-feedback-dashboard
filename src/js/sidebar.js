@@ -23,176 +23,83 @@ let multipleSelectOptions =  {
 let datePickerFrom,
 	datePickerTo;
 
-function setFilters(disease) {
-	
-	updateFiltersData();
-	$('#health-zone-dropdown').multipleSelect('destroy');
-    d3.select('#health-zone-dropdown').attr("multiple", "multiple");
-  	$('#health-zone-dropdown').empty();
-  	healthzones_filter = d3.select('#health-zone-dropdown')
-    	.selectAll("option")
-    	.data(healthzones_data)
-    	.enter().append("option")
-      	.text(function(d){ return d; })
-      	.attr("value", function(d) { return d; });
-  	$('#health-zone-dropdown').val(healthzones_data[0]);
-  	$('#health-zone-dropdown').multipleSelect({multipleSelectOptions});
-  	// $('#health-zone-dropdown').multipleSelect('refresh');
+function setFilters() {
+	var plc_type = "Séléctionner un type";
+	var plc_category = "Selectionner category";
+	var plc_keyword = "Séléctionner un mot clé";
 
-	// type filter
-	// test and create or update selects 
-	if (type_filter == undefined) {
-		$('#type-dropdown').empty();
-	    type_filter = d3.select('#type-dropdown')
-	        .selectAll("option")
-	        .data(type_data)
-	        .enter().append("option")
-	          .text(function(d){ return d; })
-	          .attr("value", function(d) { return d; });
-	    
-	    $('#type-dropdown').multipleSelect({});
-	    $('#type-dropdown').val(type_data[0]);
-	    $('#type-dropdown').multipleSelect('refresh');
-	} else {
-		$('#type-dropdown').empty();
-
-    	type_filter = d3.select('#type-dropdown')
-        .selectAll("option")
-        .data(type_data)
-        .enter().append("option")
-          .text(function(d){ return d; })
-          .attr("value", function(d) { return d; });
-		
-		$('#type-dropdown').val(type_data[0]);
-		$('#type-dropdown').multipleSelect('refresh');
+	if (lang=='en') {
+		plc_type = "Select type" ;
+		plc_category = "Select category" ;
+		plc_keyword = "Select keyword";
 	}
+	// filter type
+	$('#type-dropdown').multipleSelect({
+		placeholder: plc_type
+	});
+	$('#type-dropdown').multipleSelect('refresh');
 
 
 	// category filter
-	// test and create or update selects 
 	d3.select('#category-dropdown').attr("multiple", "multiple");
-	if (category_filter == undefined) {
-		$('#category-dropdown').empty();
-	    category_filter = d3.select('#category-dropdown')
-	        .selectAll("option")
-	        .data(category_data)
-	        .enter().append("option")
-	          .text(function(d){ return d; })
-	          .attr("value", function(d) { return d; });
-	    
-	    $('#category-dropdown').multipleSelect({multipleSelectOptions});
-	    $('#category-dropdown').val(category_data[0]);
-	    $('#category-dropdown').multipleSelect('refresh');
-	} else {
-		$('#category-dropdown').empty();
-
-    	category_filter = d3.select('#category-dropdown')
-        .selectAll("option")
-        .data(category_data)
-        .enter().append("option")
-          .text(function(d){ return d; })
-          .attr("value", function(d) { return d; });
-		
-		$('#category-dropdown').val(category_data[0]);
-		$('#category-dropdown').multipleSelect('refresh');
-	}
-
+	$('#category-dropdown').multipleSelect({
+		minimumCountSelected: 3,
+      	displayValues: true,
+      	selectAll: false,
+      	placeholder: plc_category,
+      	onClose: function(){
+      		diseaseSelected = $('#disease-dropdown').val();
+    		typeSelected = $('#type-dropdown').val();
+    		categorySelection = $('#category-dropdown').val();
+      		if(categorySelection.length !=0) {
+      			updateKeyWordFilter();
+      		}
+      		
+      	}
+	});    
+	$('#category-dropdown').multipleSelect('refresh');
 
 	// keyword filter
-	// test and create or update selects
-	d3.select('#keyword-dropdown').attr("multiple", "multiple");
-	if (keyword_filter == undefined) {
-		$('#keyword-dropdown').empty();
-	    keyword_filter = d3.select('#keyword-dropdown')
-	        .selectAll("option")
-	        .data(keyword_data)
-	        .enter().append("option")
-	          .text(function(d){ return d; })
-	          .attr("value", function(d) { return d; });
-	    
-	    $('#keyword-dropdown').multipleSelect({multipleSelectOptions});
-	    $('#keyword-dropdown').val(keyword_data[0]);
-	    $('#keyword-dropdown').multipleSelect('refresh');
-	 } else {
-		$('#keyword-dropdown').empty();
-
-    	keyword_filter = d3.select('#keyword-dropdown')
-        .selectAll("option")
-        .data(keyword_data)
-        .enter().append("option")
-          .text(function(d){ return d; })
-          .attr("value", function(d) { return d; });
-		
-		$('#keyword-dropdown').val(keyword_data[0]);
-		$('#keyword-dropdown').multipleSelect('refresh');
-	 } 
+	d3.select('#keyword-dropdown').attr("multiple", "multiple");	    
+	$('#keyword-dropdown').multipleSelect({
+		minimumCountSelected: 3,
+      	displayValues: true,
+      	selectAll: false,
+      	placeholder: plc_keyword,
+      	onClose: function(){
+      		diseaseSelected = $('#disease-dropdown').val();
+    		typeSelected = $('#type-dropdown').val();
+    		categorySelection = $('#category-dropdown').val();
+    		keywordsSelection = $('#keyword-dropdown').val();
+    		if (keywordsSelection !=0) {
+    			updateHealthzoneFilter();
+    		}      		
+      	}
+	});
+	$('#keyword-dropdown').multipleSelect('refresh'); 
 	 
 }
 
-function updateFiltersData() {
-	var disease = $('#disease-dropdown').val();
-	
-	var byDisease,
-		byType,
-		byCategory;
-
-	byDisease = filtersPivotData.filter(function(d){
-		return d.key == disease;
-	})[0].values;
-
-	type_data = [];
-	byDisease.forEach( function(element, index) {
-		type_data.push(element.key);
-	});
-
-
-	byType = byDisease.filter(function(d){
-		return d.key == type_data[0];
-	})[0].values;
-	category_data = [];
-	byType.forEach( function(element, index) {
-		category_data.push(element.key);
-	});
-
-	byCategory = byType.filter(function(d){
-		return d.key == category_data[0];
-	})[0].values;
-	keyword_data = [];
-	byCategory.forEach( function(element, index) {
-		keyword_data.push(element.key);
-	});
-
-}
 
 function resetFilters() {
 	//type filter
+	$('#type-dropdown').empty();
 	$('#type-dropdown').multipleSelect('destroy');
-	var typePrepend = '<option value="">';
-    lang=='fr' ? typePrepend += 'Séléctionner un type</option>' : typePrepend += 'Select type</option>';
-	$('#type-dropdown').empty(); 
-	$('#type-dropdown').prepend(typePrepend);
-    $('#type-dropdown').val($('.type-dropdown option:first').val());
 
 
 	//category filter
+	$('#category-dropdown').empty();
 	$('#category-dropdown').multipleSelect('destroy');
 	$('#category-dropdown').removeAttr("multiple");
 	$('#category-dropdown').removeAttr("class");
-	var categoryPrepend = '<option value="">';
-    lang=='fr' ? categoryPrepend += 'Séléctionner une catégorie</option>' : categoryPrepend += 'Select category</option>';
-	$('#category-dropdown').empty(); 
-	$('#category-dropdown').prepend(categoryPrepend);
-    $('#category-dropdown').val($('.category-dropdown option:first').val());
+	
 
 	//key word filter
+	$('#keyword-dropdown').empty();
 	$('#keyword-dropdown').multipleSelect('destroy');
 	$('#keyword-dropdown').removeAttr("multiple");
 	$('#keyword-dropdown').removeAttr("class");
-	var keyWordPrepend = '<option value="">';
-    lang=='fr' ? keyWordPrepend += 'Séléctionner un mot clé</option>' : keyWordPrepend += 'Select keyword</option>';
-	$('#keyword-dropdown').empty(); 
-	$('#keyword-dropdown').prepend(keyWordPrepend);
-    $('#keyword-dropdown').val($('.keyword-dropdown option:first').val());
+	
 
 }//resetFilters
 
@@ -221,8 +128,38 @@ function updateMultipleSelect(filterName, id, data) {
         .enter().append("option")
           .text(function(d){ return d; })
           .attr("value", function(d) { return d; });
-		
-		$('#' +id).multipleSelect('refresh'); 
+
+	$('#' +id).multipleSelect('refresh'); 
+
+} //updateMultipleSelect
+
+
+
+// update healthzone's content
+function updateHealthzoneMultipleSelect(data) {
+	var plc_healthzone = "Séléctionner une zone de santé";
+	lang=='en' ? plc_healthzone = "Select health zone" : null;
+
+	$('#health-zone-dropdown').empty();
+	$('#health-zone-dropdown').multipleSelect('destroy');
+	d3.select('#health-zone-dropdown').attr("multiple", "multiple");
+	$('#health-zone-dropdown').removeAttr("class");
+
+    healthzones_filter = d3.select('#health-zone-dropdown')
+        .selectAll("option")
+        .data(data)
+        .enter().append("option")
+          .text(function(d){ return d; })
+          .attr("value", function(d) { return d; });
+	
+	$('#health-zone-dropdown').multipleSelect({
+		minimumCountSelected: 3,
+      	displayValues: true,
+      	selectAll: false,
+      	placeholder: plc_healthzone		
+	});
+	$('#health-zone-dropdown').multipleSelect('refresh'); 
+
 } //updateMultipleSelect
 
 
@@ -244,7 +181,124 @@ function createDatePicker(argument) {
 } //createDatePicker
 
 
+function getFilterTypeList (disease) {
+	lang=='en' ? diseaseKey = "Disease" : '';
+	var arr,
+		ret =[];
 
+	filtersPivotData.forEach( function(element, index) {
+		element.key == disease ? arr = element : '';
+	});
+	arr.values.forEach( function(element, index) {
+		ret.push(element.key)
+	});
+	return ret;
+} //getFilterTypeList
+
+
+function getFilterCategoryList(tSelected) {
+	if (lang=='en') {
+		diseaseKey = "Disease";
+		typeKey = "Type_english";
+	}
+	var byDiseaseArr,
+		bytype,
+		ret =[];
+
+	var dSelected = $('#disease-dropdown').val();
+
+	filtersPivotData.forEach( function(element, index) {
+		element.key == dSelected ? byDiseaseArr = element : '';
+	});
+
+	byDiseaseArr.values.forEach( function(element, index) {
+		element.key == tSelected ? bytype = element : '';
+	});
+
+	bytype.values.forEach( function(element, index) {
+		ret.push(element.key)
+	});
+	return ret;
+} //getFilterCategoryList
+
+function getFilterkeywordList() {
+	if (lang=='en') {
+		diseaseKey = "Disease";
+		typeKey = "Type_english";
+		categoryKey = "Category_english";
+	}
+	var byDiseaseArr,
+		byType,
+		bycategory = [],
+		ret =[];
+
+
+	filtersPivotData.forEach( function(element, index) {
+		element.key == diseaseSelected ? byDiseaseArr = element.values : '';
+	});
+
+	byDiseaseArr.forEach( function(element, index) {
+		element.key == typeSelected ? byType = element.values : '';
+	});
+
+	byType.forEach( function(element, index) {
+		categorySelection.includes(element.key) ? bycategory.push(element) : '';
+	});
+
+	for (var i = 0; i < bycategory.length; i++) {
+		bycategory[i].values.forEach( function(element, index) {
+			ret.push(element.key);
+		});
+	}
+	return ret;
+} //getFilterTypeList
+
+function getFilterHealthzonesList() {
+	if (lang=='en') {
+		diseaseKey = "Disease";
+		typeKey = "Type_english";
+		categoryKey = "Category_english";
+	}
+	var byDiseaseArr,
+		byType,
+		bycategory = [],
+		ret =[];
+
+
+	filtersPivotData.forEach( function(element, index) {
+		element.key == diseaseSelected ? byDiseaseArr = element.values : '';
+	});
+
+	byDiseaseArr.forEach( function(element, index) {
+		element.key == typeSelected ? byType = element.values : '';
+	});
+
+	byType.forEach( function(element, index) {
+		categorySelection.includes(element.key) ? bycategory.push(element) : '';
+	});
+
+	var arr = [];
+	for (var i = 0; i < bycategory.length; i++) {
+		bycategory[i].values.forEach( function(element, index) {
+			arr.push(element.values)
+			for (var j = 0; j < element.values.length; j++) {
+				ret.includes(element.values[j]["Zone de Santé"]) ? '': ret.push(element.values[j]["Zone de Santé"]);
+			}
+		});
+	}
+	return ret;
+} //getFilterHealthzonesList
+
+
+function updateKeyWordFilter() {
+	var options = getFilterkeywordList();
+	updateMultipleSelect(keyword_filter, "keyword-dropdown", options); 
+}//updateKeyWordFilter
+
+function updateHealthzoneFilter() {
+	var options = getFilterHealthzonesList();
+	updateHealthzoneMultipleSelect(options); 
+}//updateKeyWordFilter
 
 
 
