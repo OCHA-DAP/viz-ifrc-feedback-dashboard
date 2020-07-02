@@ -39,6 +39,9 @@ function translateInterface() {
 
 
 function getFiltersPivotData() {
+    lang == "en" ? categoryKey = "Category_english" : categoryKey = "Catégorie"; 
+    dataTableData = [];
+
     if (lang=='en') {
       filtersPivotData = d3.nest()
           .key(function(d){ return d['Disease']; })
@@ -57,6 +60,9 @@ function getFiltersPivotData() {
 
   return new Promise(resolve => {
     var arr = [];
+    feedbackData.forEach( function(element, index) {
+        dataTableData.push([element[categoryKey], element["Histoire"], element["Zone de Santé"]]);
+    });
     filtersPivotData.forEach( function(element, index) {
         arr.push(element.key);
     });
@@ -89,6 +95,64 @@ function waitForElement(varName){
 }
 
 
+function updateDataTableData() {
+
+    if (lang=='en') {
+        diseaseKey = "Disease";
+        typeKey = "Type_english";
+        categoryKey = "Category_english";
+        keyWordKey = "Key_word_english";
+    } else {
+        diseaseKey = "Maladie";
+        typeKey = "Type";
+        categoryKey = "Catégorie";
+        keyWordKey = "Mot Clé";     
+    } 
+
+    var data;
+    if(typeof healthzoneSelection == "string") {
+        data = feedbackData.filter(function(d) {
+            return d["Zone de Santé"]==healthzoneSelection;
+        })
+    } else { 
+        data = feedbackData.filter(filterByHealthZone) ;
+    }
+
+    if(diseaseSelected !=""){
+        data = data.filter(function(d){
+            return d[diseaseKey] == diseaseSelected;
+        });    
+    }
+
+    if(typeSelected !==null){
+        data = data.filter(function(d){
+            return d[typeKey] == typeSelected;
+        });
+    }
+
+    if(categorySelection.length !=0){
+        data = data.filter(filterByCategory) ;
+    }
+    if(keywordsSelection.length !=0){
+        data = data.filter(filterByKeyword) ;
+    }
+
+    var fromDate = $("#from").datepicker('getDate');
+    var toDate = $("#to").datepicker('getDate');
+    
+    data = data.filter(function(d){
+        var date = new Date(d["Date AAAA-MM-JJ"]);
+        return date.getTime() >= fromDate.getTime() &&
+            date.getTime() <= toDate.getTime();
+    });
+
+    
+    dataTableData = [];
+    data.forEach( function(element, index) {
+        dataTableData.push([element[categoryKey], element["Histoire"], element["Zone de Santé"]]);
+    });
+
+}//updateDataTableData
 
 
 

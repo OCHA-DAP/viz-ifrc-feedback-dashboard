@@ -1,11 +1,13 @@
 let globalDiseaseChart;
 let detailedChart;
+ let primeColor = '#0073b7' ;
 
 function drawGlobalChart(data) {
 	globalDiseaseChart =  c3.generate({
 	          bindto: '#global-chart',
 	          padding: { left: 250, right: 30 },
 	          size: { height: 305 },
+	          color:{primeColor},
 	          data: {
 	              x: 'x',
 	              columns: data,

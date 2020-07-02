@@ -192,6 +192,20 @@ select {
 	width: 50%;
 }
 
+#datatable {
+	margin-top: 20px;
+	thead {
+		tr {
+			text-align: left;
+			th {
+				&:last-child {
+					min-width: 112px;
+				}
+			}
+		}
+	}
+}
+
 main,
 footer {
   opacity: 0;

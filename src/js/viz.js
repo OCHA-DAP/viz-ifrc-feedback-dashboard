@@ -1,12 +1,13 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-// const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
-const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
+const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
+// const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 
 let langDict;
 let lang = 'fr';
 
 let feedbackData;
+let dataTableData = [];
 
 let maxiDate,
     miniDate;
@@ -33,8 +34,11 @@ $( document ).ready(function() {
         element["Date AAAA-MM-JJ"] = date;
 
         healthzones_data.includes(element["Zone de Santé"]) ? '' : healthzones_data.push(element["Zone de Santé"]);
+
+        dataTableData.push([element["Catégorie"], element["Histoire"], element["Zone de Santé"]]);
       });
       feedbackData = data[1];
+
       
       //get date ranges
       miniDate = new Date(d3.min(feedbackData,function(d){return d["Date AAAA-MM-JJ"];}));
@@ -92,8 +96,8 @@ $( document ).ready(function() {
     $('#health-zone-dropdown').multipleSelect();
 
     setFilters();
-
     globalChartsManager();
+    drawTable();
     
     $('#global-chart').show();
     $('#chart').html('');
@@ -129,6 +133,24 @@ $( document ).ready(function() {
     } 
   }//detailedChart
 
+  function drawTable() {
+    if($.fn.dataTable.isDataTable( '#datatable' )){
+      $('#datatable').dataTable().fnClearTable();
+    } else {
+      $('#datatable').DataTable({
+        data : [],
+        "bFilter" : false,
+        "bLengthChange" : false
+      });
+    }
+    $('#datatable').dataTable().fnAddData(dataTableData);
+  } //drawTable
+
+
+  function updateDataTable() {
+    $('#datatable').dataTable().fnClearTable();
+    $('#datatable').dataTable().fnAddData(dataTableData); 
+  }
 
   getData();
 
@@ -140,11 +162,15 @@ $( document ).ready(function() {
     keywordsSelection = $('#keyword-dropdown').val();
     healthzoneSelection = $('#health-zone-dropdown').val();
     
+    updateDataTableData();
+
     if (diseaseSelected=='') {
       updateGlobalChart();
     } else {
       detailedChartManager();
     }
+
+    updateDataTable();
 
   });
   
@@ -179,8 +205,8 @@ $( document ).ready(function() {
 
     globalDiseaseChart = globalDiseaseChart.destroy();
     detailedChart = undefined;
+    
     resetFilters(); 
-
     initialize();
 
   })

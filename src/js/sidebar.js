@@ -24,14 +24,18 @@ let datePickerFrom,
 	datePickerTo;
 
 function setFilters() {
-	var plc_type = "Séléctionner un type";
-	var plc_category = "Selectionner category";
-	var plc_keyword = "Séléctionner un mot clé";
+	var plc_type ;
+	var plc_category ;
+	var plc_keyword ;
 
 	if (lang=='en') {
 		plc_type = "Select type" ;
 		plc_category = "Select category" ;
 		plc_keyword = "Select keyword";
+	} else{
+		plc_type = "Séléctionner un type";
+		plc_category = "Séléctionner category";
+		plc_keyword = "Séléctionner un mot clé";
 	}
 	// filter type
 	$('#type-dropdown').multipleSelect({
