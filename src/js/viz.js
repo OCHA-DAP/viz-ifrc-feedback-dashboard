@@ -1,6 +1,6 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
-// const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
+// const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
+const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 
 let langDict;
@@ -167,6 +167,7 @@ $( document ).ready(function() {
     if (diseaseSelected=='') {
       updateGlobalChart();
     } else {
+
       detailedChartManager();
     }
 
@@ -178,6 +179,7 @@ $( document ).ready(function() {
     var selected = $('#disease-dropdown').val();
     if(selected !=" "){
       // setFilters(selected);
+      $('.hideFilters').show();
       var options = getFilterTypeList(selected);
       updateMultipleSelect(type_filter, "type-dropdown", options);
       var prepend = '<option value="">Séléctionner un type</option>';
@@ -202,7 +204,7 @@ $( document ).ready(function() {
     en ? lang='en' : lang='fr';
 
     //translate interface
-
+    $('.hideFilters').hide();
     globalDiseaseChart = globalDiseaseChart.destroy();
     detailedChart = undefined;
     
