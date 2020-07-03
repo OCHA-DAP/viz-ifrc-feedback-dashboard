@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="https://unpkg.com/multiple-select@1.5.2/dist/multiple-select.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet.css" media="all">
 
     <script src="https://kit.fontawesome.com/39e5643f1a.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -21,6 +22,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.19/js/jquery.dataTables.min.js"></script>
     <script src="https://momentjs.com/downloads/moment.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.6.0/leaflet-src.js"></script>
   </head>
 
   <body>
@@ -40,7 +42,7 @@
       <div class='grid-container content'>
         <div class='sidebar col-3'>
           <div class="chooseLang">
-            Choose language
+            Choix de langue
             <label class='check-container'>Français
               <input type='radio'  checked='checked' name='langRadio' id="french">
               <span class='radio-btn'></span>
@@ -64,36 +66,28 @@
           </div>
 
           <div class="diseaseLang">
-            Disease
-            <select id='disease-dropdown'>
-              <!-- <option value='select'>Séléctionner une maladie</option> -->
-            </select>
+            Maladie
+            <select id='disease-dropdown'></select>
           </div>
           
           <div class="hideFilters">
             <div class="typeLang">
               Type
-              <select id='type-dropdown'>
-                <!-- <option value='select'>Séléctionner un type</option> -->
-              </select>
+              <select id='type-dropdown'></select>
             </div>
 
             <div class="categoryLang">
-              Category
-              <select id='category-dropdown'>
-                <!-- <option value='select'>Séléctionner une catégorie</option> -->
-              </select>
+              Catégorie
+              <select id='category-dropdown'></select>
             </div>
 
             <div class="keyWordLang">
-              Key word
-              <select id='keyword-dropdown'>
-                <!-- <option value='select'>Séléctionner un mot clé</option> -->
-              </select>
+              Mot clé
+              <select id='keyword-dropdown'></select>
             </div>
           </div>
           <div  class="dateLang">
-            Date range
+            Dates
             <div class="date-range-container">
               <input type="text" id="from" name="from">
               <label for="to"> – </label>
@@ -102,10 +96,8 @@
           </div>
 
           <div class="healthLang">
-            Health zone
-            <select id='health-zone-dropdown'>
-              <!-- <option value=''>Beni</option> -->
-            </select>
+            Zone de santé
+            <select id='health-zone-dropdown'></select>
           </div>
 
           <div class="update">
@@ -117,7 +109,7 @@
             <select class='presentation-dropdown'>
               <option value=''>IFRC feedback for comments related to the effect of money on the Ebola outbreak and the response 09 2019-09-13.pdf</option>
             </select>
-            <a role='button' class='btn align-right' href='#'><i class='fas fa-download'></i> Download</a>
+            <a role='button' class='btn align-right' href='#'><i class='fas fa-download'></i> Télécharger</a>
           </div>
         </div>
         <div class='col-9'>
@@ -156,7 +148,7 @@
               </div>
             </div>
             <div class='container map col-4'>
-              <div class='inner'>map</div>
+              <div class='inner' id="map"></div>
 
               <div class='container-footer'>
                 <a href='#'><i class='fas fa-question-circle'></i></a>
@@ -167,13 +159,13 @@
           <div class='grid-container'>
             <div class='container table col-12'>
               <div class='inner'>
-                <h3>Sample Comments</h3>
+                <h3>Extraits des rumeurs</h3>
                 <table id="datatable" class="display" style="width:100%">
                   <thead>
                     <tr>
-                      <th>Category</th>
-                      <th>Sample comments</th>
-                      <th>Health zone</th>
+                      <th>Catégorie</th>
+                      <th>Histoire</th>
+                      <th>Zone de santé</th>
                     </tr>
                   </thead>
                 </table>

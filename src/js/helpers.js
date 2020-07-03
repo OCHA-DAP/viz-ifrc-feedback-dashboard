@@ -155,6 +155,12 @@ function updateDataTableData() {
 }//updateDataTableData
 
 
+function toPercentage(data) { 
+    console.log(data)
+
+} //toPercentage
+
+
 
 
 

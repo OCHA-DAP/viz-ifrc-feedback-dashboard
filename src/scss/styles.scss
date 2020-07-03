@@ -181,6 +181,15 @@ select {
 	margin-bottom: 15px;
 }
 
+#map {
+	height: 350px;
+	width: 100%;
+}
+
+#global-chart{
+	display: none;
+}
+
 .date-range-container {
     align-items: center;
 	display: flex;

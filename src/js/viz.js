@@ -2,6 +2,7 @@
 const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
 // const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
+let locationsURL = 'data/locations.csv' ;
 
 let langDict;
 let lang = 'fr';
@@ -24,7 +25,8 @@ $( document ).ready(function() {
   	Promise.all([
   		// d3.json(geodataURL),
   		d3.json(langFileURL),
-  		d3.csv(dataURL)
+  		d3.csv(dataURL),
+      d3.csv(locationsURL)
   	]).then(function(data){
   		langDict = data[0];
       data[1].forEach( function(element, index) {
@@ -34,10 +36,13 @@ $( document ).ready(function() {
         element["Date AAAA-MM-JJ"] = date;
 
         healthzones_data.includes(element["Zone de Santé"]) ? '' : healthzones_data.push(element["Zone de Santé"]);
+        healthzonesList.includes(element["Zone de Santé"]) ? '' : healthzonesList.push(element["Zone de Santé"]);
 
         dataTableData.push([element["Catégorie"], element["Histoire"], element["Zone de Santé"]]);
       });
+      
       feedbackData = data[1];
+      locationsData = data[2];
 
       
       //get date ranges
@@ -97,10 +102,11 @@ $( document ).ready(function() {
 
     setFilters();
     globalChartsManager();
+    generateMap();
     drawTable();
     
     $('#global-chart').show();
-    $('#chart').html('');
+    // $('#chart').html('');
 
   } //initialize
 
@@ -167,7 +173,7 @@ $( document ).ready(function() {
     if (diseaseSelected=='') {
       updateGlobalChart();
     } else {
-
+      $('#global-chart').hide();
       detailedChartManager();
     }
 
@@ -206,8 +212,8 @@ $( document ).ready(function() {
     //translate interface
     $('.hideFilters').hide();
     globalDiseaseChart = globalDiseaseChart.destroy();
-    detailedChart = undefined;
-    
+    detailedChart != undefined ? detailedChart.destroy() : '';
+    map.remove();
     resetFilters(); 
     initialize();
 

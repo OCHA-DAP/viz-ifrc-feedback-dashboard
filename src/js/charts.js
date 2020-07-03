@@ -261,6 +261,7 @@ function formatDetailedData_pct(data) {
 		columns.push(col);
 	});
 
+	// toPercentage(data);
 	return columns;
 
 }//formatDetailedData
