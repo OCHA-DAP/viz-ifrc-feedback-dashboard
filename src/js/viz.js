@@ -1,6 +1,6 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
-// const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
+// const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
+const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 let locationsURL = 'data/locations.csv' ;
 
@@ -18,6 +18,8 @@ let typeSelected;
 let categorySelection;
 let keywordsSelection;
 let healthzoneSelection;
+
+let feedbackDataSum = [];
 
 $( document ).ready(function() {
 
@@ -39,6 +41,14 @@ $( document ).ready(function() {
         healthzonesList.includes(element["Zone de Santé"]) ? '' : healthzonesList.push(element["Zone de Santé"]);
 
         dataTableData.push([element["Catégorie"], element["Histoire"], element["Zone de Santé"]]);
+        var obj = {
+          date: date,
+          healthzone: element["Zone de Santé"],
+          type : element["Type"],
+          type_en: element["Type_english"],
+          val : Number(element["Nbre"])
+        }
+        feedbackDataSum.push(obj);
       });
       
       feedbackData = data[1];
@@ -130,8 +140,9 @@ $( document ).ready(function() {
     }
     $('#mainAreaTitle').html(areaTitle);
     var data = getDetailedData();
-    var cols = formatDetailedData_pct(data);
+    
     if (detailedChart == undefined) {
+      var cols = formatDetailedData_pct(data);
       drawDetailedChart(cols);
     } else {
       updateDetailedChart();

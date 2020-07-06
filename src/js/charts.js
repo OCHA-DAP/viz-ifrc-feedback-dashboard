@@ -53,6 +53,13 @@ function drawDetailedChart(data) {
 	                      centered: true,
 	                      outer: false
 	                  }
+	              },
+	              y:{
+	              	//max: 0,
+	              	tick:{
+	              		format: d3.format('d'),
+	              		//count: 8
+	              	}
 	              }
 	          },
 	          grid: {
@@ -235,16 +242,47 @@ var sort_key = function (d1, d2) {
 	if (d1.key < d2.key) return 1;
 	return 0;
 }
+
+function getSum(healthzone) {
+	var rightType = "type";
+	lang=="en" ? rightType = "type_en" : null;
+
+	var data = feedbackDataSum.filter(function(d){
+		return d.healthzone == healthzone ;
+	});
+	data = data.filter(function(d) { return d[rightType] == typeSelected; });
+
+
+	var fromDate = $("#from").datepicker('getDate');
+	var toDate = $("#to").datepicker('getDate');
+	
+	data = data.filter(function(d){
+		var date = new Date(d.date);
+		return date.getTime() >= fromDate.getTime() &&
+			date.getTime() <= toDate.getTime();
+	});
+	var dataArr = d3.nest()
+		.key(function(d) { return [d.healthzone, d[rightType]]; })
+		.rollup(function(v){ return d3.sum(v, function(d){ return d.val; }); })
+		.entries(data);
+	
+	return dataArr[0].value; 
+} //getSum
+
 function formatDetailedData_pct(data) {
 	var x = ['x'],
 		columns = [];
 	var dataNames = [];
 
+
 	data.forEach( function(element, index) {
+		var total = getSum(element.key);
 		dataNames.push(element.key);
 		var arr = element.values;
 		arr.forEach( function(item) {
 			x.includes(item.key) ? '' : x.push(item.key);
+			//put value in percentage
+			item.value = ((item.value / total)*100).toFixed(2);
 		});
 	});
 	columns.push(x);
