@@ -22,19 +22,57 @@ function generateGlobalKeyFigures() {
 		disease == 'covid-19' ? covidNum = element.value : '';
 	});
 
-	$('#covid h4').text(covidLabel);
-	$('#covid div.num').text(covidNum);
-
-	$('#ebola h4').text(ebolaLabel)
-	$('#ebola div.num').text(ebolaNum);
-
-	$('#global h4').text(globalLabel);
-	$('#global div.num').text(globalNum);
+	writeKeyFigures([covidLabel, covidNum], [ebolaLabel, ebolaNum], [globalLabel, globalNum]);
 } //generateGlobalKeyFigures
 
 
 function generateDiseaseKeyFigures() {
 	var keyFigures = keyFiguresCovid19;
 	// (diseaseSelected).toLowerCase() == 'ebola' ? keyFigures = keyFiguresEbola : keyFigures = keyFiguresCovid19;
-	console.log(keyFigures)
+	var provinceArr = [];
+	for (var i = 0; i < healthzoneSelection.length; i++) {
+		zsProvinces.forEach( function(element, index) {
+			element.key == healthzoneSelection[i] ? provinceArr.push(element.values[0]['Code']): '';
+		});
+	}
+	var recovered = 0;
+	var infected = 0;
+	var killed = 0;
+
+	for (var i = 0; i < provinceArr.length; i++) {
+		keyFigures.forEach( function(element, index) {
+			if (element['#adm1+pcode']==provinceArr[i]) {
+				recovered += element['#affected+recovered'];
+				killed += element['#affected+killed'];
+				infected += element['#affected+infected'];
+			}
+		});
+	}
+	var recoverdLabel = "Covid-19: nombre de guéries (provinces concernées)";
+	var casesLabel = "Covid-19: nombre de cas (provinces concernées)";
+	var deathLabel = "Covid-19: nombre de morts (provinces concernées)";
+	if (lang=="en") {
+		recoverdLabel = "Covid-19: number of recovered (related provinces)";
+		casesLabel = "Covid-19: number of cases (related provinces)";
+		deathLabel = "Covid-19: number of deaths (related provinces)";
+	}
+	writeKeyFigures([casesLabel, infected], [recoverdLabel, recovered], [deathLabel, killed]);
 }//generateDiseaseKeyFigures
+
+
+function writeKeyFigures(arr1, arr2, arr3) {
+
+	$('#covid h4').text(arr1[0]);
+	$('#covid div.num').text(arr1[1]);
+
+	$('#ebola h4').text(arr2[0])
+	$('#ebola div.num').text(arr2[1]);
+
+	$('#global h4').text(arr3[0]);
+	$('#global div.num').text(arr3[1]); 
+}//writeKeyFigures
+
+
+
+
+

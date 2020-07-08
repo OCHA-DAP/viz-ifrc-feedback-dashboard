@@ -1,10 +1,10 @@
 // const geodataURL = 'data/geodata_locations.geojson';
-const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv';
+const dataURL = 'https://proxy.hxlstandard.org/api/data-preview.csv?url=https%3A%2F%2Fdocs.google.com%2Fspreadsheets%2Fd%2Fe%2F2PACX-1vTQ-Ryt1Obw4bnGaHruXcHDq2pZpxuGjJqsA8ZePTgtiRTtqiy8zSFAH46okegDvdE72J_Se-dva1Nn%2Fpub%3Fgid%3D864201017%26single%3Dtrue%26output%3Dcsv&force=on';
 // const dataURL = 'data/Feedback_data_consolidated_HDX - DATA.csv';
 const langFileURL = 'data/lang.json';
 const locationsURL = 'data/locations.csv' ;
-const keyFigDataURL = 'https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=admin0name&tagger-01-tag=%23country+%2Bname&tagger-02-header=admin1name&tagger-02-tag=%23adm1+%2Bname&tagger-03-header=admin1pcod&tagger-03-tag=%23adm1+%2Bpcode&tagger-04-header=cas_confirmes&tagger-04-tag=%23affected+%2Binfected&tagger-05-header=deces&tagger-05-tag=%23affected+%2Bkilled&tagger-06-header=gueris&tagger-06-tag=%23affected+%2Brecovered&tagger-15-header=coord_x&tagger-15-tag=%23geo+%2Blat&tagger-16-header=coord_y&tagger-16-tag=%23geo+%2Blon&url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2F2ec81cad-04a3-4bfe-b127-c36658947427%2Fresource%2Fab052e46-72e9-4bbf-b9a1-12a285c62fdd%2Fdownload%2Fwca_covid19_data_admin1_master.xlsx&sheet=2&header-row=1&dest=data_view&strip-headers=on';
-
+const keyFigDataURL = 'https://proxy.hxlstandard.org/data.csv?tagger-match-all=on&tagger-01-header=admin0name&tagger-01-tag=%23country+%2Bname&tagger-02-header=admin1name&tagger-02-tag=%23adm1+%2Bname&tagger-03-header=admin1pcod&tagger-03-tag=%23adm1+%2Bpcode&tagger-04-header=cas_confirmes&tagger-04-tag=%23affected+%2Binfected&tagger-05-header=deces&tagger-05-tag=%23affected+%2Bkilled&tagger-06-header=gueris&tagger-06-tag=%23affected+%2Brecovered&tagger-15-header=coord_x&tagger-15-tag=%23geo+%2Blat&tagger-16-header=coord_y&tagger-16-tag=%23geo+%2Blon&url=https%3A%2F%2Fdata.humdata.org%2Fdataset%2F2ec81cad-04a3-4bfe-b127-c36658947427%2Fresource%2Fab052e46-72e9-4bbf-b9a1-12a285c62fdd%2Fdownload%2Fwca_covid19_data_admin1_master.xlsx&sheet=2&header-row=1&dest=data_view&strip-headers=on&force=on';
+const ZSProvincesURL = 'data/drc_zs_provinces.csv';
 
 let langDict;
 let lang = 'fr';
@@ -13,6 +13,7 @@ let feedbackData;
 let dataTableData = [];
 let keyFiguresCovid19;
 let keyFiguresEbola;
+let zsProvinces;
 
 let maxiDate,
     miniDate;
@@ -33,7 +34,8 @@ $( document ).ready(function() {
   		d3.json(langFileURL),
   		d3.csv(dataURL),
       d3.csv(locationsURL),
-      d3.csv(keyFigDataURL)
+      d3.csv(keyFigDataURL),
+      d3.csv(ZSProvincesURL)
   	]).then(function(data){
   		langDict = data[0];
       data[1].forEach( function(element, index) {
@@ -58,8 +60,6 @@ $( document ).ready(function() {
       
       feedbackData = data[1];
       locationsData = data[2];
-      console.log(locationsData)
-
 
       keyFiguresCovid19 = data[3].filter(function(d) {
         return d['#country+name'] == "Democratic Republic of Congo";
@@ -69,6 +69,10 @@ $( document ).ready(function() {
         element['#affected+killed'] = +element['#affected+killed'];
         element['#affected+recovered'] = +element['#affected+recovered'];
       });
+
+      zsProvinces = d3.nest()
+          .key(function(d){ return d['Zone de sante']; })
+          .entries(data[4]);
 
       
       //get date ranges
@@ -202,7 +206,7 @@ $( document ).ready(function() {
       updateGlobalChart();
     } else {
       $('#global-chart').hide();
-      // generateDiseaseKeyFigures();
+      generateDiseaseKeyFigures();
       detailedChartManager();
     }
 
