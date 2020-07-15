@@ -35,13 +35,14 @@ function generateDiseaseKeyFigures() {
 			element.key == healthzoneSelection[i] ? provinceArr.push(element.values[0]['Code']): '';
 		});
 	}
+
 	var recovered = 0;
 	var infected = 0;
 	var killed = 0;
 
 	for (var i = 0; i < provinceArr.length; i++) {
 		keyFigures.forEach( function(element, index) {
-			if (element['#adm1+pcode']==provinceArr[i]) {
+			if (element['#adm1+code']==provinceArr[i]) {
 				recovered += element['#affected+recovered'];
 				killed += element['#affected+killed'];
 				infected += element['#affected+infected'];

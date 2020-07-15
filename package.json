@@ -16,6 +16,7 @@
     "concat:js": "mkdir -p dist/js && concat -o dist/js/bundle.js ./app.js src/js/*.js",
     "build:data": "mkdir -p dist/data/ && cp src/data/* dist/data/",
     "build:html": "mkdir -p dist && cp src/*.html dist/",
+    "build:libs": "mkdir -p dist/libs && cp src/lib/*.js dist/libs/",
     "build:css": "mkdir -p dist/css && npm run scss",
     "build:js": "npm run concat:js && browserify -t browserify-css dist/js/bundle.js | uglifyjs > dist/js/bundle.min.js",
     "build:assets": "mkdir -p dist/assets && cp -r src/assets/ dist/assets/",
