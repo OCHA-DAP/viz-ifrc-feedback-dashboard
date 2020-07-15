@@ -21,4 +21,4 @@ dist/
 package-lock.json
 
 # data
-src/data/*.csv
+src/data/Feedback_data_consolidated_HDX - DATA.csv
